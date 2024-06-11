@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: escriptorium-collate
-Version: 0.1.2
+Version: 0.1.3
 Summary: A Python library for collating eScriptorium documents.
 Home-page: https://github.com/oeshera/escriptorium-collate
 Author: Osama Eshera
@@ -15,6 +15,7 @@ Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
 Classifier: Programming Language :: Python :: Implementation :: CPython
 Classifier: Programming Language :: Python :: Implementation :: PyPy
 Requires-Python: >=3.7
