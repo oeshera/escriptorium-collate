@@ -1,4 +1,9 @@
 from escriptorium_connector import EscriptoriumConnector
+from escriptorium_connector.dtos import (
+    PostAbbreviatedTranscription,
+    PostTranscription,
+    PutTranscription,
+)
 
 
 def create(
@@ -6,19 +11,26 @@ def create(
     doc_pk: int,
     layer_name: str,
 ):
-    from escriptorium_connector.dtos import PostAbbreviatedTranscription, PostTranscription
-
     transcription = escr.create_document_transcription(
-        doc_pk=doc_pk, transcription_name=PostAbbreviatedTranscription(layer_name)
+        doc_pk=doc_pk,
+        transcription_name=PostAbbreviatedTranscription(layer_name),
     )
     parts = escr.get_document_parts(doc_pk=doc_pk).results
     for part in parts:
-        lines = escr.get_document_part_lines(doc_pk=doc_pk, part_pk=part.pk).results
+        lines = escr.get_document_part_lines(
+            doc_pk=doc_pk,
+            part_pk=part.pk,
+        ).results
         escr.bulk_create_transcriptions(
             doc_pk=doc_pk,
             part_pk=part.pk,
             transcriptions=[
-                PostTranscription(line=line.pk, transcription=transcription.pk, content="") for line in lines
+                PostTranscription(
+                    line=line.pk,
+                    transcription=transcription.pk,
+                    content="",
+                )
+                for line in lines
             ],
         )
 
@@ -30,8 +42,6 @@ def copy(
     target_transcription_layer_name: str,
     overwrite: bool,
 ):
-    from escriptorium_connector.dtos import PutTranscription, PostTranscription
-
     transcriptions = escr.get_document_transcriptions(doc_pk=doc_pk)
     source_transcription_layer_pk = None
     target_transcription_layer_pk = None
@@ -48,7 +58,10 @@ def copy(
 
     parts = escr.get_document_parts(doc_pk=doc_pk).results
     for part in parts:
-        lines = escr.get_document_part_lines(doc_pk=doc_pk, part_pk=part.pk).results
+        lines = escr.get_document_part_lines(
+            doc_pk=doc_pk,
+            part_pk=part.pk,
+        ).results
         update_transcriptions = []
         create_transcriptions = []
         for line in lines:
@@ -84,8 +97,16 @@ def copy(
                         content=source_transcription.content if source_transcription else "",
                     )
                 )
-        escr.bulk_update_transcriptions(doc_pk=doc_pk, part_pk=part.pk, transcriptions=update_transcriptions)
-        escr.bulk_create_transcriptions(doc_pk=doc_pk, part_pk=part.pk, transcriptions=create_transcriptions)
+        escr.bulk_update_transcriptions(
+            doc_pk=doc_pk,
+            part_pk=part.pk,
+            transcriptions=update_transcriptions,
+        )
+        escr.bulk_create_transcriptions(
+            doc_pk=doc_pk,
+            part_pk=part.pk,
+            transcriptions=create_transcriptions,
+        )
 
 
 def get_transcription_pk_by_name(
