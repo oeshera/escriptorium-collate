@@ -1,9 +1,15 @@
-from minineedle import needle, core
-from typing import List, Optional, Literal
-from pydantic import BaseModel, parse_obj_as, FilePath
+import json
+import os
+import subprocess
+import tempfile
+from typing import List, Literal
+
 from escriptorium_connector import EscriptoriumConnector
-import json, subprocess
+from minineedle import core, needle
 from nltk.tokenize import WhitespaceTokenizer
+from pydantic import BaseModel
+
+from escriptorium_collate.transcription_layers import get_transcription_pk_by_name
 
 
 class Witness(BaseModel):
@@ -15,37 +21,32 @@ class Witness(BaseModel):
     normalized_transcription_name: str | None
 
 
-class Witnesses(BaseModel):
-    pass
-
-
 class CollatexArgs(BaseModel):
     algorithm: Literal["needleman-wunsch", "medite", "dekker"] = "needleman-wunsch"
-    dot_path: FilePath | None
+    distance: int | None
+    dot_path: str | None
     format: Literal["tei", "json", "dot", "graphml", "tei"] = "json"
+    input: str | None
     input_encoding: str | None
+    max_collation_size: int | None
+    max_parallel_collations: int | None
     output_encoding: str | None
-    input: FilePath = "input.json"
-    output: FilePath = "output.json"
+    output: str | None
     tokenized: bool = False
     token_comparator: Literal["equality", "levenshtein"] = "equality"
-    distance: int | None
 
 
 def get_collatex_input(
     escr: EscriptoriumConnector,
     witnesses: List[Witness],
-    collatex_args: CollatexArgs = {},
+    collatex_args: CollatexArgs,
 ):
-    witnesses = parse_obj_as(List[Witness], witnesses)
-    collateX = parse_obj_as(CollatexArgs, collatex_args)
-
-    input = {
+    input_json = {
         "witnesses": [],
-        "algorithm": collateX.algorithm,
+        "algorithm": collatex_args.algorithm,
         "tokenComparator": {
-            "type": collateX.token_comparator,
-            "distance": collateX.distance,
+            "type": collatex_args.token_comparator,
+            "distance": collatex_args.distance,
         },
     }
 
@@ -102,55 +103,95 @@ def get_collatex_input(
                         normalized_seq = [str(e) for e in normalized_algn]
                         diplomatic_seq = [str(e) for e in diplomatic_algn]
                     for index, value in enumerate(normalized_seq):
-                        tokens.append(
-                            {
-                                "t": diplomatic_seq[index],
-                                "n": value,
-                                "doc_pk": doc_pk,
-                                "line_pk": normalized_line.line,
-                                "normalized_transcription_pk": normalized_line.transcription,
-                                "normalized_line_transcription_pk": normalized_line.pk,
-                                "diplomatic_transcription_pk": diplomatic_line.transcription,
-                                "diplomatic_line_transcription_pk": diplomatic_line.pk,
-                            }
-                        )
+                        token = {
+                            "t": diplomatic_seq[index],
+                            "n": value,
+                            "doc_pk": doc_pk,
+                            "line_pk": normalized_line.line,
+                            "normalized_transcription_pk": normalized_line.transcription,
+                            "normalized_line_transcription_pk": normalized_line.pk,
+                            "diplomatic_transcription_pk": diplomatic_line.transcription,
+                            "diplomatic_line_transcription_pk": diplomatic_line.pk,
+                        }
+                        tokens.append(token)
 
-        input["witnesses"].append({"id": witness.siglum, "tokens": tokens})
+        input_json["witnesses"].append({"id": witness.siglum, "tokens": tokens})
 
-    # with open(collateX.input, "w") as file:
-    #     json.dump(input, file, ensure_ascii=False)
-
-    return input
+    return input_json
 
 
-def get_collatex_output(
-    collatex_args: CollatexArgs = {},
-):
-    collateX_args = parse_obj_as(CollatexArgs, collatex_args)
+def get_collatex_output(collatex_args: CollatexArgs):
     args = [
         "java",
         "-jar",
-        "collatex-tools-1.7.1.jar",
+        "vendor/collatex-tools-1.7.1.jar",
         "-a",
-        collateX_args.algorithm,
+        collatex_args.algorithm,
         "-f",
-        "json",
-        collateX_args.input,
-        # "-t" if collateX_args.tokenized else "",
+        collatex_args.format,
     ]
 
-    cmd = subprocess.Popen(
+    if collatex_args.tokenized:
+        args.append("-t")
+
+    if collatex_args.dot_path:
+        args.extend(["-dot", collatex_args.dot_path])
+
+    if collatex_args.input_encoding:
+        args.extend(["-ie", collatex_args.input_encoding])
+
+    if collatex_args.output_encoding:
+        args.extend(["-oe", collatex_args.output_encoding])
+
+    if collatex_args.max_collation_size:
+        args.extend(["-mcs", collatex_args.max_collation_size])
+
+    if collatex_args.max_parallel_collations:
+        args.extend(["-mpc", collatex_args.max_parallel_collations])
+
+    args.append(collatex_args.input)
+
+    with subprocess.Popen(
         args,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-    )
-    out, err = cmd.communicate()
-    if err:
-        raise Exception(err)
+    ) as cmd:
+        out, err = cmd.communicate()
+
+        if cmd.returncode != 0:
+            error = f"CollateX failed: {cmd.returncode} {out} {err}"
+            raise RuntimeError(error)
 
     output = json.loads(out)
 
-    # with open(collateX_args.output, "w") as file:
-    #     json.dump(output, file, ensure_ascii=False)
-
     return output
+
+
+def collate(
+    escr: EscriptoriumConnector,
+    witnesses: List[Witness],
+    collatex_args: CollatexArgs,
+):
+    if not collatex_args.input or not os.path.exists(collatex_args.input):
+        input_json = get_collatex_input(
+            escr=escr,
+            witnesses=witnesses,
+            collatex_args=collatex_args,
+        )
+
+    if collatex_args.input:
+        with open(collatex_args.input, "w", encoding="UTF-8") as file:
+            json.dump(input_json, file, ensure_ascii=False)
+        output_json = get_collatex_output(collatex_args=collatex_args)
+    else:
+        with tempfile.NamedTemporaryFile(mode="w") as file:
+            json.dump(input_json, file, ensure_ascii=False)
+            collatex_args.input = file.name
+            file.flush()
+            output_json = get_collatex_output(collatex_args=collatex_args)
+
+    if collatex_args.output:
+        with open(collatex_args.output, "w", encoding="UTF-8") as file:
+            json.dump(output_json, file, ensure_ascii=False)
+
+    return output_json
