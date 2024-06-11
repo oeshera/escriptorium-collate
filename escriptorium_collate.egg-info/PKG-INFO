@@ -1,13 +1,13 @@
 Metadata-Version: 2.1
 Name: escriptorium-collate
-Version: 0.1.0
+Version: 0.1.2
 Summary: A Python library for collating eScriptorium documents.
 Home-page: https://github.com/oeshera/escriptorium-collate
 Author: Osama Eshera
 Author-email: Osama Eshera <osama.eshera@gmail.com>
-Project-URL: Documentation, https://github.com/unknown/escriptorium-collate#readme
-Project-URL: Issues, https://github.com/unknown/escriptorium-collate/issues
-Project-URL: Source, https://github.com/unknown/escriptorium-collate
+Project-URL: Documentation, https://github.com/oeshera/escriptorium-collate#readme
+Project-URL: Issues, https://github.com/oeshera/escriptorium-collate/issues
+Project-URL: Source, https://github.com/oeshera/escriptorium-collate
 Classifier: Development Status :: 4 - Beta
 Classifier: Programming Language :: Python
 Classifier: Programming Language :: Python :: 3.7
@@ -20,6 +20,10 @@ Classifier: Programming Language :: Python :: Implementation :: PyPy
 Requires-Python: >=3.7
 Description-Content-Type: text/markdown
 License-File: LICENSE.txt
+Requires-Dist: escriptorium-connector
+Requires-Dist: minineedle
+Requires-Dist: nltk
+Requires-Dist: pydantic
 
 # eScriptorium Collate
 

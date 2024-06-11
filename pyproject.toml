@@ -24,7 +24,12 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
+dependencies = [
+  "escriptorium-connector",
+  "minineedle",
+  "nltk",
+  "pydantic",
+]
 
 [project.urls]
 Documentation = "https://github.com/oeshera/escriptorium-collate#readme"
