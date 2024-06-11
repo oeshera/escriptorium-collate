@@ -1,0 +1,44 @@
+Metadata-Version: 2.1
+Name: escriptorium-collate
+Version: 0.1.0
+Summary: A Python library for collating eScriptorium documents.
+Home-page: https://github.com/oeshera/escriptorium-collate
+Author: Osama Eshera
+Author-email: Osama Eshera <osama.eshera@gmail.com>
+Project-URL: Documentation, https://github.com/unknown/escriptorium-collate#readme
+Project-URL: Issues, https://github.com/unknown/escriptorium-collate/issues
+Project-URL: Source, https://github.com/unknown/escriptorium-collate
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+
+# eScriptorium Collate
+
+[![PyPI - Version](https://img.shields.io/pypi/v/escriptorium-collate.svg)](https://pypi.org/project/escriptorium-collate)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/escriptorium-collate.svg)](https://pypi.org/project/escriptorium-collate)
+
+-----
+
+**Table of Contents**
+
+- [Installation](#installation)
+- [License](#license)
+
+## Installation
+
+```console
+pip install escriptorium-collate
+```
+
+## License
+
+`escriptorium-collate` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.

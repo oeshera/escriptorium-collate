@@ -5,13 +5,13 @@ build-backend = "hatchling.build"
 [project]
 name = "escriptorium-collate"
 dynamic = ["version"]
-description = ''
+description = "A Python library for collating eScriptorium documents."
 readme = "README.md"
 requires-python = ">=3.7"
-license = "MIT"
+license = {file = "LICENSE"}
 keywords = []
 authors = [
-  { name = "oeshera", email = "osama.eshera@gmail.com" },
+  { name = "Osama Eshera", email = "osama.eshera@gmail.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",

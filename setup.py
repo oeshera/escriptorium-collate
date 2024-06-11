@@ -5,7 +5,7 @@ setup(
     version="0.1.0",
     author="Osama Eshera",
     author_email="osama.eshera@gmail.com",
-    description="A python package for collating eScriptorium documents.",
+    description="A Python library for collating eScriptorium documents.",
     url="https://github.com/oeshera/escriptorium-collate",
     packages=find_packages(),
     install_requires=[

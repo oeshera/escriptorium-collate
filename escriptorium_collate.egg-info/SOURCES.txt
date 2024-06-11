@@ -1,0 +1,13 @@
+LICENSE.txt
+README.md
+pyproject.toml
+setup.py
+escriptorium_collate/__about__.py
+escriptorium_collate/__init__.py
+escriptorium_collate/collate.py
+escriptorium_collate/transcription_layers.py
+escriptorium_collate.egg-info/PKG-INFO
+escriptorium_collate.egg-info/SOURCES.txt
+escriptorium_collate.egg-info/dependency_links.txt
+escriptorium_collate.egg-info/top_level.txt
+tests/__init__.py
