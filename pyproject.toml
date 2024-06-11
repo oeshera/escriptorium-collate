@@ -27,9 +27,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/unknown/escriptorium-collate#readme"
-Issues = "https://github.com/unknown/escriptorium-collate/issues"
-Source = "https://github.com/unknown/escriptorium-collate"
+Documentation = "https://github.com/oeshera/escriptorium-collate#readme"
+Issues = "https://github.com/oeshera/escriptorium-collate/issues"
+Source = "https://github.com/oeshera/escriptorium-collate"
 
 [tool.hatch.version]
 path = "src/escriptorium_collate/__about__.py"

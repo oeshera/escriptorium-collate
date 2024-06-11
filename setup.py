@@ -9,7 +9,7 @@ setup(
     url="https://github.com/oeshera/escriptorium-collate",
     packages=find_packages(),
     install_requires=[
-        "escriptorium_connector",
+        "escriptorium-connector",
         "minineedle",
         "nltk",
         "pydantic",
