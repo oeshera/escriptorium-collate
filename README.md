@@ -167,7 +167,7 @@ class Witness(BaseModel):
   normalized_transcription_name: str | None
 ```
 
-Either `diplomatic_transcription_name` or `diplomatic_transcription_pk` is required. Likewise, either `normalized_transcription_name` or `normalized_transcription_pk` is required.
+If `diplomatic_transcription_pk` is provided, `diplomatic_transcription_name` is ignored. Likewise, if `normalized_transcription_pk` is provided, `normalized_transcription_name` is ignored.
 
 The "diplomatic" transcription is not collated, rather, it is simply "passed through" to the CollateX output. It is the "normalized" transcription that is collated.
 
