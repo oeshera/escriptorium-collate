@@ -13,7 +13,12 @@ from escriptorium_collate.transcription_layers import get_transcription_pk_by_na
 
 
 class Witness(BaseModel):
-    pk: int
+    """
+    Interface for defining an eScriptorium document as
+    a witness to be passed to CollateX
+    """
+
+    doc_pk: int
     siglum: str
     diplomatic_transcription_pk: int | None
     diplomatic_transcription_name: str | None
@@ -22,6 +27,10 @@ class Witness(BaseModel):
 
 
 class CollatexArgs(BaseModel):
+    """
+    Interface for passing arguments to the CollateX command line interface
+    """
+
     algorithm: Literal["needleman-wunsch", "medite", "dekker"] = "needleman-wunsch"
     distance: int | None
     dot_path: str | None
@@ -41,6 +50,18 @@ def get_collatex_input(
     witnesses: List[Witness],
     collatex_args: CollatexArgs,
 ):
+    """
+    Given two or more Witness instances and a set of CollateX arguments,
+    return the input JSON that will be later passed to CollateX.
+
+    Args:
+        escr (EscriptoriumConnector): An EscriptoriumConnector instance
+        witnesses (List[Witness]): A list of Witness instances to be collated
+        collatex_args (CollatexArgs): An instance of CollatexArgs
+
+    Returns:
+        dict: CollateX input JSON
+    """
     input_json = {
         "witnesses": [],
         "algorithm": collatex_args.algorithm,
@@ -51,7 +72,7 @@ def get_collatex_input(
     }
 
     for witness in witnesses:
-        doc_pk = witness.pk
+        doc_pk = witness.doc_pk
 
         if witness.diplomatic_transcription_pk:
             normalized_transcription_layer_pk = escr.get_document_transcription(
@@ -121,6 +142,19 @@ def get_collatex_input(
 
 
 def get_collatex_output(collatex_args: CollatexArgs):
+    """
+    Pass a given instance of CollatexArgs to the CollateX JAR.
+
+    Args:
+        collatex_args (CollatexArgs): An instance of CollatexArgs
+
+    Raises:
+        RuntimeError: An error is raised if CollateX fails.
+
+    Returns:
+        dict: CollateX output JSON
+    """
+
     args = [
         "java",
         "-jar",
@@ -172,6 +206,17 @@ def collate(
     witnesses: List[Witness],
     collatex_args: CollatexArgs,
 ):
+    """
+    Run the complete collation pipeline via one function call.
+
+    Args:
+        escr (EscriptoriumConnector): An EscriptoriumConnector instance
+        witnesses (List[Witness]): A list of Witness instances
+        collatex_args (CollatexArgs): An instance of CollatexArgs
+
+    Returns:
+        dict: CollateX JSON output
+    """
     if not collatex_args.input or not os.path.exists(collatex_args.input):
         input_json = get_collatex_input(
             escr=escr,

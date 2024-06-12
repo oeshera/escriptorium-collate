@@ -11,6 +11,15 @@ def create(
     doc_pk: int,
     layer_name: str,
 ):
+    """
+    Create an arbitrarily named transcription layer
+    for a given eScriptorium document.
+
+    Args:
+        escr (EscriptoriumConnector): An EscriptoriumConnector instance
+        doc_pk (int): Primary key of an eScriptorium document
+        layer_name (str): Name of the transcription layer to be created
+    """
     transcription = escr.create_document_transcription(
         doc_pk=doc_pk,
         transcription_name=PostAbbreviatedTranscription(layer_name),
@@ -42,19 +51,34 @@ def copy(
     target_transcription_layer_name: str,
     overwrite: bool,
 ):
-    transcriptions = escr.get_document_transcriptions(doc_pk=doc_pk)
-    source_transcription_layer_pk = None
-    target_transcription_layer_pk = None
-    for t in transcriptions:
-        if t.name == source_transcription_layer_name:
-            source_transcription_layer_pk = t.pk
-        elif t.name == target_transcription_layer_name:
-            target_transcription_layer_pk = t.pk
+    """
+    Copy the content of one transcription layer
+    to another for a given eScriptorium document.
 
-    if not source_transcription_layer_pk:
-        raise Exception("Source Transcription Layer Not Found")
-    elif not target_transcription_layer_pk:
-        raise Exception("Target Transcription Layer Not Found")
+    Args:
+        escr (EscriptoriumConnector):
+            An EscriptoriumConnector instance
+        doc_pk (int):
+            Primary key of an eScriptorium document
+        source_transcription_layer_name (str):
+            Name of the transcription layer to be copied
+        target_transcription_layer_name (str):
+            Name of the transcription layer to be written
+        overwrite (bool):
+            If true, content of the target transcription layer is overwritten
+    """
+
+    source_transcription_layer_pk = get_transcription_pk_by_name(
+        escr=escr,
+        doc_pk=doc_pk,
+        transcription_name=source_transcription_layer_name,
+    )
+
+    target_transcription_layer_pk = get_transcription_pk_by_name(
+        escr=escr,
+        doc_pk=doc_pk,
+        transcription_name=target_transcription_layer_name,
+    )
 
     parts = escr.get_document_parts(doc_pk=doc_pk).results
     for part in parts:
@@ -114,6 +138,22 @@ def get_transcription_pk_by_name(
     doc_pk: int,
     transcription_name: str,
 ):
+    """
+    Given the name of a transcription layer within a given document,
+    return the transcription layer's primary key.
+
+    Args:
+        escr (EscriptoriumConnector): An EscriptoriumConnector instance
+        doc_pk (int): Primary key of an eScriptorium document
+        transcription_name (str): Name of the desired transcription layer
+
+    Raises:
+        ValueError: If no transcription layer is found with the given name
+            is found in the given document, a value error is raised
+
+    Returns:
+        int: Primary key of the transcription layer
+    """
     transcriptions = escr.get_document_transcriptions(doc_pk=doc_pk)
     for t in transcriptions:
         if t.name == transcription_name:
