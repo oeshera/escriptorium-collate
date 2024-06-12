@@ -13,6 +13,7 @@ setup(
         "minineedle",
         "nltk",
         "pydantic",
+        "python-dotenv",
     ],
     setup_requires=["pytest-runner", "flake8"],
     tests_require=["pytest"],

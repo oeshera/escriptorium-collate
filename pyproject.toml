@@ -30,6 +30,7 @@ dependencies = [
   "minineedle",
   "nltk",
   "pydantic",
+  "python-dotenv"
 ]
 
 [project.urls]
