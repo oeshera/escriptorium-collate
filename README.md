@@ -3,6 +3,8 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/escriptorium-collate.svg)](https://pypi.org/project/escriptorium-collate)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/escriptorium-collate.svg)](https://pypi.org/project/escriptorium-collate)
 
+A Python library for collating eScriptorium documents. This is a pre-release version in public alpha.
+
 ---
 
 **Table of Contents**
