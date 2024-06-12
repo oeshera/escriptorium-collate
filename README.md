@@ -158,17 +158,18 @@ This packaged contains two modules: `escriptorium_collate/collate.py` and `escri
 An interface for defining an eScriptorium document as a witness to be passed to CollateX.
 
 ```python
-from escriptorium_collate.collate import Witness
-
-Witness(
-  doc_pk=1, # Primary key of an eScriptorium document (int)
-  siglum="A", # Arbitrary siglum to be used in the critical apparatus (str)
-  diplomatic_transcription_name="diplomatic", # This transcription is not collated, rather, it is simply "passed through" to the CollateX output
-  normalized_transcription_name="normalized", # This transcription is collated
-)
+class Witness(BaseModel):
+  doc_pk: int # Primary key of an eScriptorium document (int)
+  siglum: str # Arbitrary siglum to be used in the critical apparatus (str)
+  diplomatic_transcription_pk: int | None
+  diplomatic_transcription_name: str | None
+  normalized_transcription_pk: int | None
+  normalized_transcription_name: str | None
 ```
 
 Either `diplomatic_transcription_name` or `diplomatic_transcription_pk` is required. Likewise, either `normalized_transcription_name` or `normalized_transcription_pk` is required.
+
+The "diplomatic" transcription is not collated, rather, it is simply "passed through" to the CollateX output. It is the "normalized" transcription that is collated.
 
 #### `escriptorium_collate.collate.CollatexArgs`
 
