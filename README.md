@@ -91,8 +91,6 @@ if api_key:
     escr = EscriptoriumConnector(url, api_key=api_key)
 else:
     escr = EscriptoriumConnector(url, username, password)
-
-escr = EscriptoriumConnector(url, username, password)
 ```
 
 The `.env` file should look like this:
