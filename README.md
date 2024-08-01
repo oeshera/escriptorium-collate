@@ -68,8 +68,12 @@ source venv/bin/activate
 Once the virtual environment is activated, install the package:
 
 ```console
+pip install escriptorium-connector @ git+https://gitlab.com/oeshera/escriptorium_python_connector
 pip install escriptorium-collate
 ```
+
+[!NOTE]  
+This package depends on `escriptorium-connector`. However, the version of `escriptorium-connector` currently published on PyPi is not up to date with the latest development version of eScriptorium. Depending on the version of eScriptorium you are using, the PyPi version of `escriptorium-connector` may fail. As a temporary solution, the above-mentioned fork of `escriptorium-connector` can be used. It will work in most cases.
 
 ## Quick Start
 
@@ -85,10 +89,10 @@ load_dotenv(override=True)
 url = str(os.getenv("ESCRIPTORIUM_URL"))
 username = str(os.getenv("ESCRIPTORIUM_USERNAME"))
 password = str(os.getenv("ESCRIPTORIUM_PASSWORD"))
-api_key = str(os.getenv("ESCRIPTORIUM_API_KEY"))
+api_key = os.getenv("ESCRIPTORIUM_API_KEY")
 
 if api_key:
-    escr = EscriptoriumConnector(url, api_key=api_key)
+    escr = EscriptoriumConnector(url, api_key=str(api_key))
 else:
     escr = EscriptoriumConnector(url, username, password)
 ```

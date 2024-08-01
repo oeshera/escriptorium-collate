@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "escriptorium-collate"
-version = "0.1.8"
+version = "0.1.9"
 description = "A Python library for collating eScriptorium documents."
 authors = ["Osama Eshera <osama.eshera@gmail.com>"]
 readme = "README.md"
@@ -8,7 +8,7 @@ packages = [{include = "escriptorium_collate"}]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-escriptorium-connector = "*"
+# escriptorium-connector = "*"
 minineedle = "*"
 nltk = "*"
 pydantic = "*"
