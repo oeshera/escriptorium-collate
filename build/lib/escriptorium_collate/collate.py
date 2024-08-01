@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import tempfile
+from importlib.resources import files
 from typing import List, Literal
 
 from escriptorium_connector import EscriptoriumConnector
@@ -155,10 +156,12 @@ def get_collatex_output(collatex_args: CollatexArgs):
         dict: CollateX output JSON
     """
 
+    jar_path = str(files("escriptorium_collate") / "__assets__" / "collatex-tools-1.7.1.jar")
+
     args = [
         "java",
         "-jar",
-        "vendor/collatex-tools-1.7.1.jar",
+        jar_path,
         "-a",
         collatex_args.algorithm,
         "-f",
