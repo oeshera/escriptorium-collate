@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="escriptorium-collate",
-    version="0.1.6",
+    version="0.1.8",
     author="Osama Eshera",
     author_email="osama.eshera@gmail.com",
     description="A Python library for collating eScriptorium documents.",
