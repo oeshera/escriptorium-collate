@@ -3,7 +3,11 @@ import os
 import subprocess
 import tempfile
 from importlib.resources import files
-from typing import List, Literal
+
+try:
+    from typing import List, Literal
+except ImportError:
+    from typing_extensions import List, Literal
 
 from escriptorium_connector import EscriptoriumConnector
 from minineedle import core, needle
