@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "escriptorium-collate"
-version = "0.1.11"
+version = "0.1.12"
 description = "A Python library for collating eScriptorium documents."
 authors = ["Osama Eshera <osama.eshera@gmail.com>"]
 readme = "README.md"
@@ -12,12 +12,14 @@ where = ["src"]
 "*" = ["*.*"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 # escriptorium-connector = "*"
 minineedle = "*"
 nltk = "*"
 pydantic = "*"
 python-dotenv = "*"
+importlib-resources = "^6.4.2"
+requests = "^2.32.3"
 
 [build-system]
 requires = ["hatchling"]
@@ -28,7 +30,7 @@ name = "escriptorium-collate"
 dynamic = ["version"]
 description = "A Python library for collating eScriptorium documents."
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = {file = "LICENSE.txt"}
 keywords = []
 authors = [
@@ -37,7 +39,6 @@ authors = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -84,7 +85,7 @@ cov = [
 ]
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.lint]
 detached = true

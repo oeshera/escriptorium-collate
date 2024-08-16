@@ -2,7 +2,11 @@ import json
 import os
 import subprocess
 import tempfile
-from importlib.resources import files
+
+try:
+    from importlib.resources import files
+except ImportError:
+    from importlib_resources import files
 
 try:
     from typing import List, Literal
