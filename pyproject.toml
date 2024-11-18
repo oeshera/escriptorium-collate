@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "escriptorium-collate"
-version = "0.1.12"
+version = "0.1.13"
 description = "A Python library for collating eScriptorium documents."
 authors = ["Osama Eshera <osama.eshera@gmail.com>"]
 readme = "README.md"

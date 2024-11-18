@@ -83,6 +83,9 @@ def get_collatex_input(
     for witness in witnesses:
         doc_pk = witness.doc_pk
 
+        normalized_transcription_layer_pk = None
+        diplomatic_transcription_layer_pk = None
+
         if witness.diplomatic_transcription_pk:
             normalized_transcription_layer_pk = escr.get_document_transcription(
                 doc_pk=doc_pk, transcription_pk=witness.diplomatic_transcription_pk
@@ -108,44 +111,100 @@ def get_collatex_input(
         tokens = []
         parts = escr.get_document_parts(doc_pk=doc_pk).results
         for part in parts:
-            lines = escr.get_document_part_lines(doc_pk=doc_pk, part_pk=part.pk).results
-            for line in lines:
-                normalized_line = escr.get_document_part_line_transcription_by_transcription(
-                    doc_pk=doc_pk,
-                    part_pk=part.pk,
-                    line_pk=line.pk,
-                    transcription_pk=normalized_transcription_layer_pk,
-                )
-                diplomatic_line = escr.get_document_part_line_transcription_by_transcription(
-                    doc_pk=doc_pk,
-                    part_pk=part.pk,
-                    line_pk=line.pk,
-                    transcription_pk=diplomatic_transcription_layer_pk,
-                )
-                if normalized_line and diplomatic_line:
-                    normalized_seq = WhitespaceTokenizer().tokenize(normalized_line.content)
-                    diplomatic_seq = WhitespaceTokenizer().tokenize(diplomatic_line.content)
-                    if len(normalized_seq) != len(diplomatic_seq):
-                        alignment: needle.NeedlemanWunsch[str] = needle.NeedlemanWunsch(normalized_seq, diplomatic_seq)
-                        alignment.gap_character = ""
-                        alignment.align()
-                        (normalized_algn, diplomatic_algn) = alignment.get_aligned_sequences(core.AlignmentFormat.list)
-                        normalized_seq = [str(e) for e in normalized_algn]
-                        diplomatic_seq = [str(e) for e in diplomatic_algn]
-                    for index, value in enumerate(normalized_seq):
-                        token = {
-                            "t": diplomatic_seq[index],
-                            "n": value,
-                            "doc_pk": doc_pk,
-                            "line_pk": normalized_line.line,
-                            "normalized_transcription_pk": normalized_line.transcription,
-                            "normalized_line_transcription_pk": normalized_line.pk,
-                            "diplomatic_transcription_pk": diplomatic_line.transcription,
-                            "diplomatic_line_transcription_pk": diplomatic_line.pk,
-                        }
-                        tokens.append(token)
+            if not normalized_transcription_layer_pk and not diplomatic_transcription_layer_pk:
+                pass
+            elif normalized_transcription_layer_pk == diplomatic_transcription_layer_pk:
+                lines = escr.get_document_part_lines(doc_pk=doc_pk, part_pk=part.pk).results
+                for line in lines:
+                    normalized_line = escr.get_document_part_line_transcription_by_transcription(
+                        doc_pk=doc_pk,
+                        part_pk=part.pk,
+                        line_pk=line.pk,
+                        transcription_pk=normalized_transcription_layer_pk,
+                    )
+                    if normalized_line:
+                        normalized_seq = WhitespaceTokenizer().tokenize(normalized_line.content)
+                        for index, value in enumerate(normalized_seq):
+                            token = {
+                                "t": value,
+                                "doc_pk": doc_pk,
+                                "line_pk": normalized_line.line,
+                                "normalized_transcription_pk": normalized_line.transcription,
+                                "normalized_line_transcription_pk": normalized_line.pk,
+                                "diplomatic_transcription_pk": normalized_line.transcription,
+                                "diplomatic_line_transcription_pk": normalized_line.pk,
+                            }
+                            tokens.append(token)
+            else:
+                lines = escr.get_document_part_lines(doc_pk=doc_pk, part_pk=part.pk).results
+                for line in lines:
+                    normalized_line = escr.get_document_part_line_transcription_by_transcription(
+                        doc_pk=doc_pk,
+                        part_pk=part.pk,
+                        line_pk=line.pk,
+                        transcription_pk=normalized_transcription_layer_pk,
+                    )
+                    diplomatic_line = escr.get_document_part_line_transcription_by_transcription(
+                        doc_pk=doc_pk,
+                        part_pk=part.pk,
+                        line_pk=line.pk,
+                        transcription_pk=diplomatic_transcription_layer_pk,
+                    )
+                    if normalized_line and diplomatic_line:
+                        normalized_seq = WhitespaceTokenizer().tokenize(normalized_line.content)
+                        diplomatic_seq = WhitespaceTokenizer().tokenize(diplomatic_line.content)
+                        if len(normalized_seq) != len(diplomatic_seq):
+                            alignment: needle.NeedlemanWunsch[str] = needle.NeedlemanWunsch(
+                                normalized_seq, diplomatic_seq
+                            )
+                            alignment.gap_character = ""
+                            alignment.align()
+                            (normalized_algn, diplomatic_algn) = alignment.get_aligned_sequences(
+                                core.AlignmentFormat.list
+                            )
+                            normalized_seq = [str(e) for e in normalized_algn]
+                            diplomatic_seq = [str(e) for e in diplomatic_algn]
+                        for index, value in enumerate(normalized_seq):
+                            token = {
+                                "t": diplomatic_seq[index],
+                                "n": value,
+                                "doc_pk": doc_pk,
+                                "line_pk": normalized_line.line,
+                                "normalized_transcription_pk": normalized_line.transcription,
+                                "normalized_line_transcription_pk": normalized_line.pk,
+                                "diplomatic_transcription_pk": diplomatic_line.transcription,
+                                "diplomatic_line_transcription_pk": diplomatic_line.pk,
+                            }
+                            tokens.append(token)
+                    elif normalized_line:
+                        normalized_seq = WhitespaceTokenizer().tokenize(normalized_line.content)
+                        for index, value in enumerate(normalized_seq):
+                            token = {
+                                "t": value,
+                                "doc_pk": doc_pk,
+                                "line_pk": normalized_line.line,
+                                "normalized_transcription_pk": normalized_line.transcription,
+                                "normalized_line_transcription_pk": normalized_line.pk,
+                                "diplomatic_transcription_pk": None,
+                                "diplomatic_line_transcription_pk": None,
+                            }
+                            tokens.append(token)
+                    elif diplomatic_line:
+                        diplomatic_seq = WhitespaceTokenizer().tokenize(diplomatic_line.content)
+                        for index, value in enumerate(diplomatic_seq):
+                            token = {
+                                "t": value,
+                                "doc_pk": doc_pk,
+                                "line_pk": diplomatic_line.line,
+                                "normalized_transcription_pk": None,
+                                "normalized_line_transcription_pk": None,
+                                "diplomatic_transcription_pk": diplomatic_line.transcription,
+                                "diplomatic_line_transcription_pk": diplomatic_line.pk,
+                            }
+                            tokens.append(token)
 
-        input_json["witnesses"].append({"id": witness.siglum, "tokens": tokens})
+        if len(tokens) > 0:
+            input_json["witnesses"].append({"id": witness.siglum, "tokens": tokens})
 
     return input_json
 
