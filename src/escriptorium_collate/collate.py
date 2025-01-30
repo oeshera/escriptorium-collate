@@ -206,6 +206,12 @@ def get_collatex_input(
         if len(tokens) > 0:
             input_json["witnesses"].append({"id": witness.siglum, "tokens": tokens})
 
+        for witness in input_json["witnesses"]:
+            for token in witness["tokens"]:
+                for key, value in token.items():
+                    if key in ("n", "t") and value == "":
+                        token[key] = " "
+
     return input_json
 
 
@@ -267,6 +273,13 @@ def get_collatex_output(collatex_args: CollatexArgs):
             raise RuntimeError(error)
 
     output = json.loads(out)
+
+    for row in output["table"]:
+        for cell in row:
+            for token in cell:
+                for key, value in token.items():
+                    if key in ("n", "t") and value == " ":
+                        token[key] = ""
 
     return output
 
